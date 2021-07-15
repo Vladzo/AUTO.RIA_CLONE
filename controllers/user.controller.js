@@ -1,7 +1,7 @@
 const path = require('path');
-const uuid = require('uuid').v1;
 const fs = require('fs');
 const util = require('util');
+const { authService } = require('../services');
 
 const { emailActionEnums } = require('../constants');
 const { mailService } = require('../services');
@@ -76,11 +76,17 @@ module.exports = {
       const { body: { password, email, name }, avatar } = req;
 
       const hashedPassword = await passwordHasher.hash(password);
+
       const createdUser = await User.create({ ...req.body, password: hashedPassword });
 
-      await mailService.sendEmail(email, emailActionEnums.WELCOME, { name, email });
-
       const { _id } = createdUser;
+      const { accessToken, refreshToken } = authService.getTokenPair();
+
+      await Oauth.create({ accessToken, refreshToken, user: _id });
+
+      const link = `${constants.HOST_NAME}/users/${_id}/confirm/${accessToken}`;
+
+      await mailService.sendEmail(email, emailActionEnums.CONFIRM, { name, link });
 
       if (avatar) {
         const { pathForDb, finalPath, uploadPath } = await photoHelper.photoDirBuilder(avatar.name, _id, 'users');
@@ -101,6 +107,24 @@ module.exports = {
       const normalizedUser = userHelper.userNormalizator(createdUser.toObject());
 
       res.status(responseCodesEnum.CREATED).json(normalizedUser);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  confirmAccount: async (req, res, next) => {
+    try {
+      const { token, userId } = req.params;
+
+      const { user: { _id: id } } = await Oauth.findOne({ accessToken: token });
+
+      if (id.toString() !== userId.toString()) {
+        throw new ErrorHandler(responseCodesEnum.UN_AUTHORIZED, UN_AUTHORIZED.message, UN_AUTHORIZED.code);
+      }
+
+      await User.updateOne({ _id: id }, { isVerified: true });
+
+      res.status(responseCodesEnum.OK).json(constants.CONFIRM_ACCOUNT_ANSWER);
     } catch (err) {
       next(err);
     }
@@ -141,11 +165,7 @@ module.exports = {
     try {
       const { userId } = req.params;
 
-      // const user = await User.findByIdAndRemove(userId);
-
       await User.updateOne({ _id: userId }, { deleted: true });
-
-      // await mailService.sendEmail(user.email, emailActionEnums.USER_DELETE, { name: user.name, email: user.email });
 
       res.status(responseCodesEnum.DELETE).json(constants.DELETE_ANSWER);
     } catch (err) {

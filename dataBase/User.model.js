@@ -3,6 +3,10 @@ const { Schema, model } = require('mongoose');
 const { userRolesEnum, dataBaseTablesEnum } = require('../constants');
 
 const userSchema = new Schema({
+  isVerified: {
+    type: Schema.Types.Boolean,
+    default: false
+  },
   deleted: {
     type: Schema.Types.Boolean,
     index: true,

@@ -22,4 +22,6 @@ router.put('/:userId/password', userMiddleware.checkToken, userController.mailVe
 
 router.put('/:userId/password/:token', userMiddleware.checkToken, userController.changePassword);
 
+router.put('/:userId/confirm/:token', userController.confirmAccount);
+
 module.exports = router;

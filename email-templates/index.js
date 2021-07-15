@@ -19,5 +19,10 @@ module.exports = {
   [emailActionEnums.RESET_PASSWORD]: {
     templateName: 'resetPassword',
     subject: 'Confirm your password changing'
+  },
+
+  [emailActionEnums.CONFIRM]: {
+    templateName: 'Confirm',
+    subject: 'Confirm your account'
   }
 };

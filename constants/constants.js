@@ -10,6 +10,7 @@ module.exports = {
   SALT: 10,
   DELETE_ANSWER: 'User has been deleted!',
   UPDATE_ANSWER: 'User has been updated!',
+  CONFIRM_ACCOUNT_ANSWER: 'User has been confirmed',
   NO_CONTENT: 'NO CONTENT!',
   REFRESH: 'refresh',
   ACCESS: 'access',

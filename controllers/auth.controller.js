@@ -1,3 +1,4 @@
+const { ErrorHandler, errorMessages: { UN_AUTHORIZED } } = require('../errors');
 const { Oauth } = require('../dataBase');
 const { responseCodesEnum, constants } = require('../constants');
 const { passwordHasher, userHelper } = require('../helpers');
@@ -6,10 +7,14 @@ const { authService } = require('../services');
 module.exports = {
   login: async (req, res, next) => {
     try {
-      const { password: hashedPassword, _id } = req.user;
+      const { password: hashedPassword, _id, isVerified } = req.user;
       const { password } = req.body;
 
       await passwordHasher.compare(hashedPassword, password);
+
+      if (!isVerified) {
+        throw new ErrorHandler(responseCodesEnum.UN_AUTHORIZED, UN_AUTHORIZED.message, UN_AUTHORIZED.code);
+      }
 
       const tokenPair = authService.getTokenPair();
 

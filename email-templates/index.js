@@ -14,5 +14,10 @@ module.exports = {
   [emailActionEnums.USER_DELETE]: {
     templateName: 'userDelete',
     subject: 'User was deleted'
+  },
+
+  [emailActionEnums.RESET_PASSWORD]: {
+    templateName: 'resetPassword',
+    subject: 'Confirm your password changing'
   }
 };

@@ -18,4 +18,8 @@ router.put('/:userId', userMiddleware.checkToken, userMiddleware.updateValidity,
 
 router.put('/:userId/avatar', userMiddleware.checkToken, filesMiddleware.checkPhoto, userController.addAvatar);
 
+router.put('/:userId/password', userMiddleware.checkToken, userController.mailVerification);
+
+router.put('/:userId/password/:token', userMiddleware.checkToken, userController.changePassword);
+
 module.exports = router;

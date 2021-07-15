@@ -1,5 +1,6 @@
 module.exports = {
   AUTHORIZATION: 'Authorization',
+  HOST_NAME: 'http://localhost:3000',
   PORT: process.env.PORT || 5000,
   UNKNOWN_ERROR: 'Unknown error',
   ROUTE_NOT_FOUND: 'Rout not fond',
@@ -12,7 +13,7 @@ module.exports = {
   NO_CONTENT: 'NO CONTENT!',
   REFRESH: 'refresh',
   ACCESS: 'access',
-  ACCESS_TOKEN_TIME: '10m',
+  ACCESS_TOKEN_TIME: '40m',
   REFRESH_TOKEN_TIME: '10d',
   EMAIL: process.env.SERVICE_EMAIL || 'fsdssd@ef',
   EMAIL_PASSWORD: process.env.SERVICE_EMAIL_PASSWORD || '123',

@@ -3,9 +3,10 @@ const { Schema, model } = require('mongoose');
 const { userRolesEnum, dataBaseTablesEnum } = require('../constants');
 
 const userSchema = new Schema({
-  activeFlag: {
-    type: Boolean,
-    default: 0
+  deleted: {
+    type: Schema.Types.Boolean,
+    index: true,
+    default: false
   },
   avatar: [{
     type: Schema.Types.ObjectId,
@@ -36,10 +37,12 @@ const userSchema = new Schema({
 }, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
 
 userSchema.pre('find', function() {
+  this.where({ deleted: false });
   this.populate('avatar');
 });
 
 userSchema.pre('findOne', function() {
+  this.where({ deleted: false });
   this.populate('avatar');
 });
 

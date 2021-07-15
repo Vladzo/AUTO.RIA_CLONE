@@ -112,9 +112,11 @@ module.exports = {
     try {
       const { userId } = req.params;
 
-      const user = await User.findByIdAndRemove(userId);
+      //const user = await User.findByIdAndRemove(userId);
 
-      await mailService.sendEmail(user.email, emailActionEnums.USER_DELETE, { name: user.name, email: user.email });
+      await User.updateOne({ _id: userId }, { deleted: true });
+
+      //await mailService.sendEmail(user.email, emailActionEnums.USER_DELETE, { name: user.name, email: user.email });
 
       res.status(responseCodesEnum.DELETE).json(constants.DELETE_ANSWER);
     } catch (err) {

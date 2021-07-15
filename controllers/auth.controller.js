@@ -1,6 +1,6 @@
 const { Oauth } = require('../dataBase');
 const { responseCodesEnum, constants } = require('../constants');
-const { passwordHasher } = require('../helpers');
+const { passwordHasher, userHelper } = require('../helpers');
 const { authService } = require('../services');
 
 module.exports = {
@@ -15,11 +15,13 @@ module.exports = {
 
       await Oauth.remove({ user: _id });
 
-      await Oauth.create({ ...tokenPair, user: _id });
+      const createdUser = await Oauth.create({ ...tokenPair, user: _id });
+
+      const normalizedUser = userHelper.userNormalizator(createdUser.toObject());
 
       res.json({
         ...tokenPair,
-        user: req.user
+        user: normalizedUser
       });
     } catch (err) {
       next(err);

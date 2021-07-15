@@ -1,4 +1,5 @@
 module.exports = {
   USER: 'User',
-  O_AUTH: 'Oauth'
+  O_AUTH: 'Oauth',
+  AVATAR: 'Avatar'
 };

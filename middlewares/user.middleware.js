@@ -61,7 +61,6 @@ module.exports = {
         throw new ErrorHandler(responseCodesEnum.NOT_ALLOWED, error.details[0].message, IN_VALID.code);
       }
 
-      console.log('-------------------------------------');
       next();
     } catch (err) {
       next(err);
@@ -117,7 +116,6 @@ module.exports = {
       if (user) {
         throw new ErrorHandler(responseCodesEnum.NOT_ALLOWED, CANT_REGISTER.message, CANT_REGISTER.code);
       }
-      console.log(req.files);
 
       next();
     } catch (err) {

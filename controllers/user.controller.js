@@ -5,7 +5,7 @@ const util = require('util');
 
 const { emailActionEnums } = require('../constants');
 const { mailService } = require('../services');
-const { User } = require('../dataBase');
+const { User, Avatar } = require('../dataBase');
 const { responseCodesEnum, constants } = require('../constants');
 const { ErrorHandler, errorMessages: { CANT_UPLOAD_FILE } } = require('../errors');
 const { passwordHasher, photoHelper, userHelper } = require('../helpers');
@@ -55,12 +55,54 @@ module.exports = {
           }
         });
 
-        await User.updateOne({ _id }, { avatar: path.join(pathForDb) });
+        const newAvatar = await Avatar.create({ url: path.normalize(pathForDb), isActive: true, user: _id });
+
+        // const newAvatar = new Avatar({ url: path.join(pathForDb), isActive: true, user: _id });
+        // newAvatar.save(function(err){
+        //   if(err) return console.log(err);
+        // });
+
+        // createdUser.avatar = [newAvatar._id];
+        // await createdUser.save();
+        await User.updateOne({ _id }, { avatar: [newAvatar._id] });
+        // console.log(newAvatar);
       }
 
       const normalizedUser = userHelper.userNormalizator(createdUser.toObject());
 
       res.status(responseCodesEnum.CREATED).json(normalizedUser);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  addAvatar: async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const { avatar } = req;
+      const { email } = req.user;
+
+      if (avatar) {
+        const { pathForDb, finalPath, uploadPath } = await photoHelper.photoDirBuilder(avatar.name, userId, 'users');
+
+        await mkDirPromise(uploadPath, { recursive: true });
+
+        await avatar.mv(finalPath, (err) => {
+          if (err) {
+            throw new ErrorHandler(responseCodesEnum.SERVER_ERROR, CANT_UPLOAD_FILE.message, CANT_UPLOAD_FILE.code);
+          }
+        });
+
+        const newAvatar = await Avatar.create({ url: path.normalize(pathForDb), isActive: true, user: userId });
+
+        const { avatar: userAvatar } = await User.findOne({ _id: userId });
+
+        userAvatar.push(newAvatar._id);
+
+        await User.updateOne({ _id: userId }, { avatar: userAvatar });
+      }
+
+      res.json(constants.UPDATE_ANSWER);
     } catch (err) {
       next(err);
     }

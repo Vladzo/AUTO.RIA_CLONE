@@ -16,4 +16,6 @@ router.delete('/:userId', userMiddleware.checkToken, userController.removeUserBy
 
 router.put('/:userId', userMiddleware.checkToken, userMiddleware.updateValidity, userController.updateUserById);
 
+router.put('/:userId/avatar', userMiddleware.checkToken, filesMiddleware.checkPhoto, userController.addAvatar);
+
 module.exports = router;
